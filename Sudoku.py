@@ -1,5 +1,7 @@
 """
-Sudoku - Proyecto 2 Intro a IA por Ardila, Álvarez y Campos
+Proyecto II Intro a la IA Sudoku 
+- Realizado por Juan L. Ardila, Juan S. Álvarez y Samuel E. Campos
+- Profesor Julio O. Palacio - PUJ
 - Imprime 9 cuadros 3x3 correctamente
 - Permite cargar el tablero desde un .txt (9 líneas, 9 números por línea, separados por espacios o comas; 0 = vacío)
 - Tres estrategias: Fuerza Bruta (FB), Backtracking (BT), Backtracking + Forward Checking (BT+FC)
@@ -9,16 +11,9 @@ import time
 import copy
 import os
 
-# ------------------------- Lectura desde archivo -------------------------
+# Lectura desde archivo
 
 def leer_tablero_desde_txt(ruta):
-    """
-    Lee un tablero 9x9 desde un .txt.
-    Formatos válidos por línea (ejemplos):
-      0 0 3 0 2 0 6 0 0
-      0,0,3,0,2,0,6,0,0
-    Devuelve una lista de listas (9x9) de enteros.
-    """
     tablero = []
     with open(ruta, 'r', encoding='utf-8') as f:
         for linea in f:
@@ -29,16 +24,15 @@ def leer_tablero_desde_txt(ruta):
             linea = linea.replace(',', ' ')
             nums = [int(x) for x in linea.split() if x]
             if len(nums) != 9:
-                raise ValueError("Cada línea debe tener 9 números. Revisa tu archivo.")
+                raise ValueError("Cada línea debe tener 9 números. Revise su archivo.")
             tablero.append(nums)
     if len(tablero) != 9:
         raise ValueError("El archivo debe tener exactamente 9 líneas con 9 números cada una.")
     return tablero
 
-# ------------------------- Auxiliares -------------------------
+# Auxiliares 
 
 def encontrar_espacio_vacio(tablero):
-    """Devuelve (fila, col) de la primera celda vacía (con 0). Si no hay, retorna (None, None)."""
     for i in range(9):
         for j in range(9):
             if tablero[i][j] == 0:
@@ -46,16 +40,15 @@ def encontrar_espacio_vacio(tablero):
     return None, None
 
 def movimiento_valido(tablero, fila, col, num):
-    """Verifica si 'num' se puede poner en (fila, col) sin romper fila/col/subcuadrícula."""
-    # Verificar fila
+    # Verifica fila
     for x in range(9):
         if tablero[fila][x] == num:
             return False
-    # Verificar columna
+    # Verifica columna
     for x in range(9):
         if tablero[x][col] == num:
             return False
-    # Verificar subgrilla 3x3
+    # Verifica cuadritos 3x3
     fila_inicial, col_inicial = 3 * (fila // 3), 3 * (col // 3)
     for i in range(3):
         for j in range(3):
@@ -63,8 +56,8 @@ def movimiento_valido(tablero, fila, col, num):
                 return False
     return True
 
-def impresion(tablero):
-    """Imprime el tablero con los 9 cuadros 3x3 bien formados."""
+def impresion(tablero): 
+    # Imprime 9 cuadros 3x3
     sep = "+-------+-------+-------+"
     print(sep)
     for i in range(9):
@@ -76,14 +69,11 @@ def impresion(tablero):
             ch = str(val) if val != 0 else "."
             fila_tokens.append(ch)
         fila_tokens.append("|")
-        # Agrupar con espacios entre números
-        # Convertir a formato: | a b c | d e f | g h i |
-        # Ya pusimos barras en fila_tokens; ahora unimos con espacios
         print(" ".join(fila_tokens))
         if (i + 1) % 3 == 0:
             print(sep)
 
-# --------------------------- 1) Fuerza Bruta (FB) ---------------------------
+# Solución 1 - Fuerza Bruta (FB)
 
 def solucion1_FB(tablero):
     fila, col = encontrar_espacio_vacio(tablero)
@@ -98,7 +88,7 @@ def solucion1_FB(tablero):
             tablero[fila][col] = 0
     return "No hay solución"
 
-# --------------------------- 2) Backtracking (BT) ---------------------------
+# Solución 2 - Backtracking (BT)
 
 def solucion2_BT(tablero):
     fila, col = encontrar_espacio_vacio(tablero)
@@ -113,7 +103,7 @@ def solucion2_BT(tablero):
         tablero[fila][col] = 0
     return "No hay solución"
 
-# -------- 3) Backtracking + Comprobación hacia Adelante (BT+FC) --------
+# Solución 3 - Backtracking + Comprobación hacia Adelante (BT+FC)
 
 def construir_dominios(tablero):
     dominios = {}
@@ -168,24 +158,14 @@ def solucion3_BT_FC(tablero):
         tablero[i][j] = 0
     return "No hay solución"
 
-# ---------------------------------- MAIN ----------------------------------
+# MAIN 
 if __name__ == "__main__":
     # Si existe 'tablero.txt' en la misma carpeta, se usa; si no, se usa el del enunciado.
     ruta_txt = os.path.join(os.path.dirname(__file__), "tablero.txt")
     if os.path.exists(ruta_txt):
         tablero = leer_tablero_desde_txt(ruta_txt)
     else:
-        tablero = [
-            [0, 0, 3, 0, 2, 0, 6, 0, 0],
-            [9, 0, 0, 3, 0, 5, 0, 0, 1],
-            [0, 0, 1, 8, 0, 6, 4, 0, 0],
-            [0, 0, 8, 1, 0, 2, 9, 0, 0],
-            [7, 0, 0, 0, 0, 0, 0, 0, 8],
-            [0, 0, 6, 7, 0, 8, 2, 0, 0],
-            [0, 0, 2, 6, 0, 9, 5, 0, 0],
-            [8, 0, 0, 2, 0, 3, 0, 0, 9],
-            [0, 0, 5, 0, 1, 0, 3, 0, 0]
-        ]
+        println("El archivo 'tablero.txt' no fue encontrado.")
 
     print("TABLERO INICIAL:")
     impresion(tablero)
