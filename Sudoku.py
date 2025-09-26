@@ -158,17 +158,54 @@ def solucion3_BT_FC(tablero):
         tablero[i][j] = 0
     return "No hay solución"
 
+def tablero_valido(tablero):
+    """Verifica que no haya repeticiones (1..9) en filas, columnas y subcuadros 3x3.
+    Los ceros (vacíos) se ignoran en la validación."""
+    # Filas
+    for i in range(9):
+        fila = [x for x in tablero[i] if x != 0]
+        if len(fila) != len(set(fila)):
+            return False
+    # Columnas
+    for j in range(9):
+        col = [tablero[i][j] for i in range(9) if tablero[i][j] != 0]
+        if len(col) != len(set(col)):
+            return False
+    # Subcuadros 3x3
+    for sr in range(0, 9, 3):
+        for sc in range(0, 9, 3):
+            vals = []
+            for i in range(sr, sr + 3):
+                for j in range(sc, sc + 3):
+                    if tablero[i][j] != 0:
+                        vals.append(tablero[i][j])
+            if len(vals) != len(set(vals)):
+                return False
+    return True
+
 # MAIN 
 if __name__ == "__main__":
-    # Si existe 'tablero.txt' en la misma carpeta, se usa; si no, se usa el del enunciado.
+   # 1) Cargar tablero EXCLUSIVAMENTE desde tablero.txt (mismo directorio)
     ruta_txt = os.path.join(os.path.dirname(__file__), "tablero.txt")
-    if os.path.exists(ruta_txt):
-        tablero = leer_tablero_desde_txt(ruta_txt)
-    else:
-        println("El archivo 'tablero.txt' no fue encontrado.")
+    if not os.path.exists(ruta_txt):
+        print("ERROR: No se encontró 'tablero.txt' en la misma carpeta del script.")
+        print("Crea el archivo con 9 líneas y 9 números por línea (0 = vacío).")
+        raise SystemExit(1)
+
+    try:
+        tablero = leer_tablero_desde_txt(ruta_txt)  # debe existir tu función de lectura
+    except Exception as e:
+        print(f"ERROR al leer 'tablero.txt': {e}")
+        raise SystemExit(1)
 
     print("TABLERO INICIAL:")
     impresion(tablero)
+
+    # 2) Validación inicial estricta
+    if not tablero_valido(tablero):
+        print("\nERROR: El tablero inicial es inválido (rompe reglas de Sudoku).")
+        print("Revisa filas/columnas/subcuadros: no deben tener números repetidos.")
+        raise SystemExit(1)
 
     # Copias para no mezclar resultados entre estrategias
     t1 = copy.deepcopy(tablero)
