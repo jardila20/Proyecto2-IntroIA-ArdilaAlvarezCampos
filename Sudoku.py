@@ -57,7 +57,11 @@ def movimiento_valido(tablero, fila, col, num):
     return True
 
 def impresion(tablero): 
-    # Imprime 9 cuadros 3x3
+    # Imprime un tablero 9x9 bien formateado.
+    if not isinstance(tablero, list) or len(tablero) != 9 or any(len(fila) != 9 for fila in tablero):
+        print("Error: el objeto pasado a impresion no es un tablero 9x9 válido")
+        return
+
     sep = "+-------+-------+-------+"
     print(sep)
     for i in range(9):
@@ -72,6 +76,7 @@ def impresion(tablero):
         print(" ".join(fila_tokens))
         if (i + 1) % 3 == 0:
             print(sep)
+
 
 # Solución 1 - Fuerza Bruta (FB)
 
